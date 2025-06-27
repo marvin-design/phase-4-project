@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@mui/icons-material": "^7.1.2",
+    "@mui/material": "^7.1.2",
+    "axios": "^1.10.0",
+    "formik": "^2.4.6",
+    "react-router-dom": "^7.6.2",
+    "yup": "^1.6.1"
+  }
+}
