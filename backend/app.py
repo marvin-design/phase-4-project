@@ -14,7 +14,7 @@ migrate = Migrate(app, db)
 def home():
     return "Dog Care Tracker API"
 
-# Dogs endpoints
+
 @app.route('/dogs', methods=['GET'])
 def get_dogs():
     dogs = Dog.query.all()
@@ -51,5 +51,19 @@ def add_dog():
         'owner': dog.owner.name
     }), 201
 
+@app.route('/clogs')
+def get_activity_logs():
+    logs = ActivityLog.query.all()  # Fetch all logs
+    return jsonify([{
+        'id': log.id,
+        'activity_type': log.activity_type,
+        'timestamp': log.timestamp.isoformat(),
+        'dog_id': log.dog_id
+    } for log in logs])
+
+from flask_migrate import Migrate
+migrate = Migrate(app, db)
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
+
