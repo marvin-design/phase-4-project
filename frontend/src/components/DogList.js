@@ -1,17 +1,27 @@
+// src/components/DogList.js
 import React from 'react';
-import { List, ListItem, Typography } from '@mui/material';
+import DogCard from './DogCard';
 
-const DogList = ({ dogs }) => {
+const DogList = ({ dogs, onDeleteDog, onAddActivity, onAddMedicalReport }) => {
   return (
-    <List>
-      {dogs.map((dog) => (
-        <ListItem key={dog.id}>
-          <Typography>
-            {dog.name} ({dog.breed}), Age: {dog.age} - Owner: {dog.owner}
-          </Typography>
-        </ListItem>
-      ))}
-    </List>
+    <div className="dog-list">
+      <h2>Your Dogs</h2>
+      {dogs.length === 0 ? (
+        <p>No dogs added yet.</p>
+      ) : (
+        <div className="dog-cards">
+          {dogs.map(dog => (
+            <DogCard 
+              key={dog.id}
+              dog={dog}
+              onDelete={() => onDeleteDog(dog.id)}
+              onAddActivity={(activity) => onAddActivity(dog.id, activity)}
+              onAddMedicalReport={(report) => onAddMedicalReport(dog.id, report)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
