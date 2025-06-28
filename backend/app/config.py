@@ -1,3 +1,4 @@
+# backend/app/config.py
 import os
 from dotenv import load_dotenv
 
@@ -9,5 +10,4 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../static/dog_images')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max upload size
     API_PASSWORD = os.getenv('API_PASSWORD', 'dog123')
