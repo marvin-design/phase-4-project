@@ -1,4 +1,3 @@
-// src/components/DogList.js
 import React from 'react';
 import DogCard from './DogCard';
 
@@ -9,14 +8,14 @@ const DogList = ({ dogs, onDeleteDog, onAddActivity, onAddMedicalReport }) => {
       {dogs.length === 0 ? (
         <p>No dogs added yet.</p>
       ) : (
-        <div className="dog-cards">
+        <div className="dog-grid">
           {dogs.map(dog => (
             <DogCard 
               key={dog.id}
               dog={dog}
               onDelete={() => onDeleteDog(dog.id)}
-              onAddActivity={(activity) => onAddActivity(dog.id, activity)}
-              onAddMedicalReport={(report) => onAddMedicalReport(dog.id, report)}
+              onAddActivity={onAddActivity}
+              onAddMedicalReport={onAddMedicalReport}
             />
           ))}
         </div>

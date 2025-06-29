@@ -1,4 +1,4 @@
-/* src/App.css */
+/* Base Styles */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -6,7 +6,7 @@ body {
   background-color: #f5f5f5;
 }
 
-.app {
+.App {
   max-width: 1200px;
   margin: 0 auto;
   background: white;
@@ -15,14 +15,44 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.dog-form, .dog-list {
+/* Form Styles */
+.dog-form {
   margin-bottom: 30px;
   padding: 20px;
   background: #f9f9f9;
   border-radius: 5px;
 }
 
-.dog-cards {
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.image-preview {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-top: 10px;
+  border-radius: 4px;
+}
+
+/* Dog List Styles */
+.dog-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
@@ -36,9 +66,10 @@ body {
 }
 
 .dog-image {
-  max-width: 100%;
-  height: auto;
-  border-radius: 5px;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .dog-actions {
@@ -48,6 +79,26 @@ body {
   flex-wrap: wrap;
 }
 
+/* Activity and Medical Styles */
+.activity-log,
+.medical-report {
+  margin-top: 15px;
+  padding: 10px;
+  background: #f0f0f0;
+  border-radius: 5px;
+}
+
+.activities-list,
+.reports-list {
+  margin-top: 10px;
+}
+
+.activities-list ul,
+.reports-list ul {
+  padding-left: 20px;
+}
+
+/* Button Styles */
 button {
   padding: 8px 12px;
   background: #4CAF50;
@@ -58,7 +109,7 @@ button {
 }
 
 button:hover {
-  background: #45a049;
+  opacity: 0.9;
 }
 
 .delete-btn {
@@ -67,50 +118,4 @@ button:hover {
 
 .delete-btn:hover {
   background: #d32f2f;
-}
-
-.activity-log, .medical-report {
-  margin-top: 15px;
-  padding: 10px;
-  background: #f0f0f0;
-  border-radius: 5px;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-input, select, textarea {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.password-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
-  width: 300px;
-}
-
-.modal-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
 }

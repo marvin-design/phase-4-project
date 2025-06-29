@@ -1,4 +1,3 @@
-// src/components/MedicalReport.js
 import React, { useState } from 'react';
 
 const MedicalReport = ({ reports, onAddReport }) => {
@@ -13,8 +12,7 @@ const MedicalReport = ({ reports, onAddReport }) => {
     const report = {
       type: reportType,
       details,
-      date,
-      timestamp: new Date().toISOString()
+      date
     };
     
     onAddReport(report);

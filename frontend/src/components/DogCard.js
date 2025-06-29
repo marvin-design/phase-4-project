@@ -1,4 +1,3 @@
-// src/components/DogCard.js
 import React, { useState } from 'react';
 import ActivityLog from './ActivityLog';
 import MedicalReport from './MedicalReport';
@@ -14,14 +13,17 @@ const DogCard = ({ dog, onDelete, onAddActivity, onAddMedicalReport }) => {
           <img 
             src={dog.image} 
             alt={dog.name} 
-            className="dog-image" 
+            className="dog-image"
+            onError={(e) => {
+              e.target.src = '/placeholder-dog.jpg';
+            }}
           />
         )}
         <h3>{dog.name}</h3>
         <p>Breed: {dog.breed}</p>
       </div>
       
-      <div className="dog-actions">
+<div className="dog-actions">
         <button onClick={() => setShowActivities(!showActivities)}>
           {showActivities ? 'Hide Activities' : 'Show Activities'}
         </button>
@@ -36,14 +38,14 @@ const DogCard = ({ dog, onDelete, onAddActivity, onAddMedicalReport }) => {
       {showActivities && (
         <ActivityLog 
           activities={dog.activities}
-          onAddActivity={onAddActivity}
+          onAddActivity={(activity) => onAddActivity(dog.id, activity)}
         />
       )}
       
       {showMedical && (
         <MedicalReport 
           reports={dog.medicalReports}
-          onAddReport={onAddMedicalReport}
+          onAddReport={(report) => onAddMedicalReport(dog.id, report)}
         />
       )}
     </div>

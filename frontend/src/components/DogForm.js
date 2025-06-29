@@ -1,4 +1,3 @@
-// src/components/DogForm.js
 import React, { useState } from 'react';
 
 const DogForm = ({ onAddDog }) => {
@@ -29,7 +28,7 @@ const DogForm = ({ onAddDog }) => {
     const newDog = {
       name,
       breed,
-      image: imagePreview
+      image
     };
 
     onAddDog(newDog);
@@ -43,7 +42,7 @@ const DogForm = ({ onAddDog }) => {
     <div className="dog-form">
       <h2>Add a New Dog</h2>
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="form-group">
           <label>Name:</label>
           <input 
             type="text" 
@@ -52,7 +51,7 @@ const DogForm = ({ onAddDog }) => {
             required 
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Breed:</label>
           <input 
             type="text" 
@@ -61,7 +60,7 @@ const DogForm = ({ onAddDog }) => {
             required 
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Photo:</label>
           <input 
             type="file" 
@@ -72,7 +71,7 @@ const DogForm = ({ onAddDog }) => {
             <img 
               src={imagePreview} 
               alt="Preview" 
-              style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
+              className="image-preview"
             />
           )}
         </div>

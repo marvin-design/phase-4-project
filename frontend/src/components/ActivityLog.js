@@ -1,24 +1,22 @@
-// src/components/ActivityLog.js
 import React, { useState } from 'react';
 
 const ActivityLog = ({ activities, onAddActivity }) => {
-  const [newActivity, setNewActivity] = useState('');
   const [activityType, setActivityType] = useState('walk');
+  const [description, setDescription] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!newActivity) return;
+    if (!description) return;
     
     const activity = {
       type: activityType,
-      description: newActivity,
-      date,
-      timestamp: new Date().toISOString()
+      description,
+      date
     };
     
     onAddActivity(activity);
-    setNewActivity('');
+    setDescription('');
   };
 
   return (
@@ -37,8 +35,8 @@ const ActivityLog = ({ activities, onAddActivity }) => {
         </select>
         <input
           type="text"
-          value={newActivity}
-          onChange={(e) => setNewActivity(e.target.value)}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           placeholder="Activity description"
         />
         <input
