@@ -3,10 +3,20 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key')
+
+
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///dogs.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'static/dog_images')
+
+    # SQLite requires this flag on Windows to allow multithread access
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'connect_args': {'check_same_thread': False}
+    }
+
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))), 'static/dog_images')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     API_PASSWORD = os.getenv('API_PASSWORD', 'dog123')
