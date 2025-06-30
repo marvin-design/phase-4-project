@@ -12,6 +12,18 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
+@api.route('/')
+def home():
+    return """
+    <h1>Dog Management System API</h1>
+    <p>Available endpoints:</p>
+    <ul>
+        <li><a href='/api/health'>/api/health</a> - Service health</li>
+        <li><a href='/api/dogs'>/api/dogs</a> - Dog management</li>
+    </ul>
+    """
+
+
 @api.route('/health')
 def health_check():
     """Health check endpoint"""
@@ -21,7 +33,6 @@ def health_check():
         "timestamp": datetime.utcnow().isoformat()
     })
 
-# ====================== DOG ROUTES ======================
 
 @api.route('/dogs', methods=['GET'])
 def get_dogs():
@@ -51,7 +62,8 @@ def get_dog(dog_id):
 @api.route('/dogs', methods=['POST'])
 def add_dog():
     """Add a new dog"""
-    # Authentication
+   
+   
     if request.headers.get('X-API-PASSWORD') != current_app.config['API_PASSWORD']:
         return jsonify({"error": "Invalid password"}), 401
     

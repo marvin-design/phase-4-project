@@ -1,143 +1,385 @@
-import React, { useState, useEffect } from 'react';
-import DogForm from './components/DogForm';
-import DogList from './components/DogList';
+import React, { useState } from 'react';
 import './App.css';
 
-const API_URL = process.env.NODE_ENV === 'development' 
-  ? 'http://localhost:5000/api' 
-  : '/api'; // For production
-
 function App() {
+  // Medical and Activity options
+  const medicalOptions = [
+    'Vaccination',
+    'Deworming',
+    'Health Check',
+    'Medication',
+    'Surgery',
+    'Other Treatment'
+  ];
+
+  const activityOptions = [
+    'Walk',
+    'Wash',
+    'Appointment',
+    'Training',
+    'Playtime',
+    'Other Activity'
+  ];
+
+  // State declarations
   const [dogs, setDogs] = useState([]);
+  const [newDog, setNewDog] = useState({
+    name: '',
+    breed: '',
+    photo: null,
+    medicalRecords: [],
+    activities: []
+  });
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authData, setAuthData] = useState({
+    email: '',
+    password: ''
+  });
+  const [activeForm, setActiveForm] = useState({
+    dogId: null,
+    type: null
+  });
+  const [newRecord, setNewRecord] = useState({
+    type: '',
+    note: '',
+    date: ''
+  });
 
-  useEffect(() => {
-    fetchDogs();
-  }, []);
-
-  const fetchDogs = async () => {
-    try {
-      const response = await fetch(`${API_URL}/dogs`);
-      if (!response.ok) throw new Error('Failed to fetch dogs');
-      const data = await response.json();
-      setDogs(data);
-    } catch (error) {
-      console.error('Error fetching dogs:', error);
+  // Authentication handlers
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    if (authData.email && authData.password) {
+      setIsAuthenticated(true);
+      setError(null);
+    } else {
+      setError('Please enter both email and password');
     }
+    setLoading(false);
   };
 
-  const addDog = async (newDog) => {
-    const formData = new FormData();
-    formData.append('name', newDog.name);
-    formData.append('breed', newDog.breed);
-    if (newDog.image) {
-      formData.append('image', newDog.image);
+  // Dog handlers
+  const handleAddDog = (e) => {
+    e.preventDefault();
+    if (!newDog.name || !newDog.breed) {
+      setError('Name and breed are required');
+      return;
     }
 
-    try {
-      const response = await fetch(`${API_URL}/dogs`, {
-        method: 'POST',
-        headers: {
-          'X-API-PASSWORD': prompt('Enter password to add a dog:') || ''
-        },
-        body: formData
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to add dog');
+    const dogToAdd = {
+      ...newDog,
+      id: Date.now()
+    };
+
+    setDogs([...dogs, dogToAdd]);
+    setNewDog({
+      name: '',
+      breed: '',
+      photo: null,
+      medicalRecords: [],
+      activities: []
+    });
+    setError(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewDog(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    setNewDog(prev => ({ ...prev, photo: e.target.files[0] }));
+  };
+
+  // Record handlers
+  const toggleRecordForm = (dogId, type) => {
+    setActiveForm(prev => 
+      prev.dogId === dogId && prev.type === type 
+        ? { dogId: null, type: null } 
+        : { dogId, type }
+    );
+    setNewRecord({ type: '', note: '', date: '' });
+  };
+
+  const handleRecordInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewRecord(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddRecord = (dogId, recordType) => {
+    if ((recordType === 'medical' && (!newRecord.type || !newRecord.date)) ||
+        (recordType === 'activity' && !newRecord.date)) {
+      setError(recordType === 'medical' ? 'Type and date are required' : 'Date is required');
+      return;
+    }
+
+    setDogs(dogs.map(dog => {
+      if (dog.id === dogId) {
+        const newEntry = {
+          id: Date.now(),
+          type: newRecord.type,
+          note: newRecord.note,
+          date: newRecord.date
+        };
+
+        return {
+          ...dog,
+          [recordType === 'medical' ? 'medicalRecords' : 'activities']: [
+            ...dog[recordType === 'medical' ? 'medicalRecords' : 'activities'],
+            newEntry
+          ]
+        };
       }
-      
-      const data = await response.json();
-      setDogs([...dogs, data]);
-    } catch (error) {
-      alert(error.message);
-    }
+      return dog;
+    }));
+
+    setActiveForm({ dogId: null, type: null });
+    setNewRecord({ type: '', note: '', date: '' });
+    setError(null);
   };
 
-  const deleteDog = async (id) => {
-    const enteredPassword = prompt('Enter password to delete:');
-    
-    try {
-      const response = await fetch(`${API_URL}/dogs/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'X-API-PASSWORD': enteredPassword,
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete dog');
+  const handleDeleteRecord = (dogId, recordId, type) => {
+    setDogs(dogs.map(dog => {
+      if (dog.id === dogId) {
+        return {
+          ...dog,
+          [type === 'medical' ? 'medicalRecords' : 'activities']: 
+            dog[type === 'medical' ? 'medicalRecords' : 'activities']
+              .filter(r => r.id !== recordId)
+        };
       }
-      
-      setDogs(dogs.filter(dog => dog.id !== id));
-    } catch (error) {
-      alert(error.message);
-    }
+      return dog;
+    }));
   };
 
-  const addActivity = async (dogId, activity) => {
-    try {
-      const response = await fetch(`${API_URL}/dogs/${dogId}/activities`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(activity)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to add activity');
-      }
-      
-      const data = await response.json();
-      setDogs(dogs.map(dog => 
-        dog.id === dogId 
-          ? { ...dog, activities: [...dog.activities, data] } 
-          : dog
-      ));
-    } catch (error) {
-      console.error('Error adding activity:', error);
-    }
-  };
-
-  const addMedicalReport = async (dogId, report) => {
-    try {
-      const response = await fetch(`${API_URL}/dogs/${dogId}/medical-reports`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(report)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to add medical report');
-      }
-      
-      const data = await response.json();
-      setDogs(dogs.map(dog => 
-        dog.id === dogId 
-          ? { ...dog, medicalReports: [...dog.medicalReports, data] } 
-          : dog
-      ));
-    } catch (error) {
-      console.error('Error adding medical report:', error);
-    }
-  };
   return (
-    <div className="App">
-      <h1>Dog Management System</h1>
-      <DogForm onAddDog={addDog} />
-      <DogList 
-        dogs={dogs} 
-        onDeleteDog={deleteDog}
-        onAddActivity={addActivity}
-        onAddMedicalReport={addMedicalReport}
-      />
+    <div className="app">
+      {!isAuthenticated ? (
+        <div className="login-container">
+          <div className="login-form">
+            <h2>Login</h2>
+            <form onSubmit={handleLogin}>
+              <div className="form-group">
+                <label>Email:</label>
+                <input
+                  type="email"
+                  value={authData.email}
+                  onChange={(e) => setAuthData({...authData, email: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Password:</label>
+                <input
+                  type="password"
+                  value={authData.password}
+                  onChange={(e) => setAuthData({...authData, password: e.target.value})}
+                  required
+                />
+              </div>
+              <button type="submit" disabled={loading}>
+                {loading ? 'Logging in...' : 'Login'}
+              </button>
+              {error && <div className="error">{error}</div>}
+            </form>
+          </div>
+        </div>
+      ) : (
+        <div className="dashboard">
+          <header>
+            <h1>Dog Management System</h1>
+            <button onClick={() => setIsAuthenticated(false)}>Logout</button>
+          </header>
+
+          <div className="add-dog-section">
+            <h2>Add New Dog</h2>
+            <form onSubmit={handleAddDog}>
+              <div className="form-group">
+                <label>Name:</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={newDog.name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Breed:</label>
+                <input
+                  type="text"
+                  name="breed"
+                  value={newDog.breed}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Photo:</label>
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  accept="image/*"
+                />
+              </div>
+              <button type="submit">Add Dog</button>
+            </form>
+          </div>
+
+          <div className="dogs-list">
+            <h2>Your Dogs</h2>
+            {dogs.length === 0 ? (
+              <p>No dogs added yet.</p>
+            ) : (
+              dogs.map(dog => (
+                <div key={dog.id} className="dog-card">
+                  <div className="dog-basic-info">
+                    {dog.photo && (
+                      <img 
+                        src={URL.createObjectURL(dog.photo)} 
+                        alt={dog.name}
+                        className="dog-image"
+                      />
+                    )}
+                    <div>
+                      <h3>{dog.name}</h3>
+                      <p><strong>Breed:</strong> {dog.breed}</p>
+                    </div>
+                  </div>
+
+                  <div className="dog-records">
+                    <div className="record-section">
+                      <div className="section-header">
+                        <h4>Medical Records</h4>
+                        <button 
+                          onClick={() => toggleRecordForm(dog.id, 'medical')}
+                          className="add-record-btn"
+                        >
+                          Add Medical Record
+                        </button>
+                      </div>
+                      {activeForm.dogId === dog.id && activeForm.type === 'medical' && (
+                        <div className="record-form">
+                          <select
+                            name="type"
+                            value={newRecord.type}
+                            onChange={handleRecordInputChange}
+                            className="record-select"
+                            required
+                          >
+                            <option value="">Select medical type</option>
+                            {medicalOptions.map(option => (
+                              <option key={option} value={option}>{option}</option>
+                            ))}
+                          </select>
+                          <textarea
+                            name="note"
+                            value={newRecord.note}
+                            onChange={handleRecordInputChange}
+                            placeholder="Details"
+                            rows="3"
+                          />
+                          <input
+                            type="date"
+                            name="date"
+                            value={newRecord.date}
+                            onChange={handleRecordInputChange}
+                            required
+                          />
+                          <button 
+                            onClick={() => handleAddRecord(dog.id, 'medical')}
+                            className="submit-btn"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      )}
+                      <div className="records-container">
+                        {dog.medicalRecords.map(record => (
+                          <div key={record.id} className="record-item">
+                            <p><strong>{record.type}:</strong> {record.note}</p>
+                            <small>{new Date(record.date).toLocaleDateString()}</small>
+                            <button 
+                              onClick={() => handleDeleteRecord(dog.id, record.id, 'medical')}
+                              className="delete-btn"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="record-section">
+                      <div className="section-header">
+                        <h4>Activities</h4>
+                        <button 
+                          onClick={() => toggleRecordForm(dog.id, 'activity')}
+                          className="add-record-btn"
+                        >
+                          Add Activity
+                        </button>
+                      </div>
+                      {activeForm.dogId === dog.id && activeForm.type === 'activity' && (
+                        <div className="record-form">
+                          <select
+                            name="type"
+                            value={newRecord.type}
+                            onChange={handleRecordInputChange}
+                            className="record-select"
+                            required
+                          >
+                            <option value="">Select activity type</option>
+                            {activityOptions.map(option => (
+                              <option key={option} value={option}>{option}</option>
+                            ))}
+                          </select>
+                          <input
+                            type="date"
+                            name="date"
+                            value={newRecord.date}
+                            onChange={handleRecordInputChange}
+                            required
+                          />
+                          <textarea
+                            name="note"
+                            value={newRecord.note}
+                            onChange={handleRecordInputChange}
+                            placeholder="Details (optional)"
+                            rows="2"
+                          />
+                          <button 
+                            onClick={() => handleAddRecord(dog.id, 'activity')}
+                            className="submit-btn"
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      )}
+                      <div className="records-container">
+                        {dog.activities.map(activity => (
+                          <div key={activity.id} className="record-item">
+                            <p><strong>{activity.type}:</strong> {activity.note || 'No details'}</p>
+                            <small>{new Date(activity.date).toLocaleDateString()}</small>
+                            <button 
+                              onClick={() => handleDeleteRecord(dog.id, activity.id, 'activity')}
+                              className="delete-btn"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
