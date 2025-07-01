@@ -20,4 +20,9 @@ def create_app(config_class=Config):
     from app.routes import api
     app.register_blueprint(api, url_prefix='/api')
     
+    # Root route for health checks
+    @app.route('/')
+    def root():
+        return {"status": "healthy", "message": "Dog Management System API is running"}
+    
     return app
