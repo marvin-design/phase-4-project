@@ -14,7 +14,7 @@ class Config:
         raise ValueError(
             "DATABASE_URL environment variable is required. Please set your Supabase connection string.")
 
-    # Postgres URLs (they use postgres:// but SQLAlchemy needs postgresql://)
+    # PostgreSQL URLs (they use postgres:// but SQLAlchemy needs postgresql://)
     if DATABASE_URL.startswith('postgres://'):
         DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
