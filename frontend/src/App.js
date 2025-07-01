@@ -47,8 +47,8 @@ function App() {
   });
 
   // API configuration
-  const API_BASE_URL = "/api";
-  const API_PASSWORD = "dog123"; 
+  const API_BASE_URL = process.env.REACT_APP_API_URL || "/api";
+  const API_PASSWORD = "dog123";
 
   // Set up axios defaults
   useEffect(() => {
@@ -220,7 +220,7 @@ function App() {
             };
 
       await axios.post(`${API_BASE_URL}/dogs/${dogId}/${endpoint}`, payload);
-      await fetchDogs(); 
+      await fetchDogs();
       setActiveForm({ dogId: null, type: null });
       setNewRecord({ type: "", note: "", date: "" });
       setError(null);
