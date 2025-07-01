@@ -50,68 +50,36 @@ const Dashboard = ({ user, onLogout }) => {
 
   const handleAddDog = async (e) => {
     e.preventDefault();
-    console.log("=== DOG FORM SUBMISSION STARTED ===");
-    console.log("Form data:", {
-      name: newDog.name,
-      breed: newDog.breed,
-      photo: newDog.photo,
-    });
 
     if (!newDog.name || !newDog.breed) {
-      console.log("Validation failed: missing name or breed");
       setError("Name and breed are required");
       return;
     }
 
     try {
       setLoading(true);
-      console.log("Creating FormData...");
 
       const formData = new FormData();
       formData.append("name", newDog.name);
       formData.append("breed", newDog.breed);
 
       if (newDog.photo) {
-        console.log("Adding photo to FormData:", {
-          name: newDog.photo.name,
-          size: newDog.photo.size,
-          type: newDog.photo.type,
-        });
         formData.append("image", newDog.photo);
-      } else {
-        console.log("No photo selected");
       }
-
-      // Log FormData contents
-      console.log("FormData entries:");
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ": ", pair[1]);
-      }
-
-      console.log("Sending POST request to /dogs...");
 
       const response = await api.post("/dogs", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("Success! Response:", response.data);
       await fetchDogs();
       setNewDog({ name: "", breed: "", photo: null });
       setError(null);
     } catch (err) {
-      console.error("=== ERROR SUBMITTING DOG ===");
-      console.error("Error object:", err);
-      console.error("Response status:", err.response?.status);
-      console.error("Response data:", err.response?.data);
-      console.error("Response headers:", err.response?.headers);
-      console.error("Request config:", err.config);
-
       setError(
         "Failed to add dog: " + (err.response?.data?.error || err.message)
       );
     } finally {
       setLoading(false);
-      console.log("=== DOG FORM SUBMISSION ENDED ===");
     }
   };
 

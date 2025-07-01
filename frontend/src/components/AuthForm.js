@@ -15,8 +15,8 @@ const AuthForm = ({
         <h2>{isRegisterMode ? "Register" : "Login"}</h2>
         <p>
           {isRegisterMode
-            ? "Create a new account to get started."
-            : "Please enter your credentials to access the system."}
+            ? "Create a new account."
+            : "Please enter your credentials."}
         </p>
 
         <form onSubmit={onSubmit}>
