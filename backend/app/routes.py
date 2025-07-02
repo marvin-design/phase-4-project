@@ -6,6 +6,8 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from app.models import Dog, Activity, MedicalReport, User
 from app import db, supabase
 
+
+
 api = Blueprint('api', __name__)
 
 def allowed_file(filename):
@@ -334,3 +336,5 @@ def not_found_error(error):
 def internal_error(error):
     db.session.rollback()
     return jsonify({"error": "Internal server error"}), 500
+
+

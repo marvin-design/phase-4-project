@@ -87,3 +87,4 @@ class MedicalReport(db.Model):
             'date': self.date.isoformat(),
             'timestamp': self.timestamp.isoformat()
         }
+    

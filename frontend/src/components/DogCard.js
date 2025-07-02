@@ -23,17 +23,22 @@ const DogCard = ({ dog, onDelete, onAddActivity, onAddMedicalReport }) => {
         <p>Breed: {dog.breed}</p>
       </div>
 
-      <div className='dog-actions'>
-        <button onClick={() => setShowActivities(!showActivities)}>
-          {showActivities ? "Hide Activities" : "Show Activities"}
-        </button>
-        <button onClick={() => setShowMedical(!showMedical)}>
-          {showMedical ? "Hide Medical" : "Show Medical"}
-        </button>
-        <button onClick={onDelete} className='delete-btn'>
-          Delete Dog
-        </button>
-      </div>
+      
+<div className="dog-actions">
+    <button 
+      onClick={() => handleEditDog(dog)}
+      className="edit-btn"
+      disabled={loading}>
+      Edit
+    </button>
+    <button
+      onClick={() => handleDeleteDog(dog.id)}
+      className="delete-btn"
+      disabled={loading}>
+      Delete
+    </button>
+  </div>
+
 
       {showActivities && (
         <ActivityLog
@@ -48,6 +53,59 @@ const DogCard = ({ dog, onDelete, onAddActivity, onAddMedicalReport }) => {
           onAddReport={(report) => onAddMedicalReport(dog.id, report)}
         />
       )}
+  {editingDog === dog.id && (
+  <div className="edit-dog-form">
+    <h4>Edit Dog</h4>
+    <div className="form-group">
+      <label>Name:</label>
+      <input
+        type="text"
+        name="name"
+        value={editDogData.name}
+        onChange={handleEditInputChange}
+        required
+      />
+    </div>
+    <div className="form-group">
+      <label>Breed:</label>
+      <input
+        type="text"
+        name="breed"
+        value={editDogData.breed}
+        onChange={handleEditInputChange}
+        required
+      />
+    </div>
+    <div className="form-group">
+      <label>Photo:</label>
+      {editDogData.existingPhoto && (
+        <img 
+          src={editDogData.existingPhoto} 
+          alt="Current" 
+          className="current-photo" 
+        />
+      )}
+      <input
+        type="file"
+        onChange={handleEditFileChange}
+        accept="image/*"
+      />
+    </div>
+    <div className="form-actions">
+      <button
+        onClick={() => handleUpdateDog(dog.id)}
+        className="submit-btn"
+        disabled={loading}>
+        {loading ? "Updating..." : "Update"}
+      </button>
+      <button
+        onClick={handleCancelEdit}
+        className="cancel-btn">
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 };
